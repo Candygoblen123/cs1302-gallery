@@ -21,7 +21,7 @@ public class SearchBarHBox extends HBox {
      * Constructs a new {@code SearchBarHBox}.
      */
     public SearchBarHBox() {
-        super(8);
+        super(4);
 
         playButton = new Button("Play");
         searchLabel = new Label("Search:");

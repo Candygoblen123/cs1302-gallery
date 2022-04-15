@@ -45,10 +45,10 @@ public class GalleryApp extends Application {
     public GalleryApp() {
         this.stage = null;
         this.scene = null;
-        this.root = new VBox(8);
+        this.root = new VBox(4);
         this.searchBarHbox = new SearchBarHBox();
         this.statusLabel = new Label("Type in a term, select a media type, and click the button.");
-        this.imageTilePane = null;
+        this.imageTilePane = new ImageTilePane();
         this.progressHbox = null;
     } // GalleryApp
 
@@ -58,7 +58,7 @@ public class GalleryApp extends Application {
         System.out.println("init() called");
 
         root.setAlignment(Pos.CENTER_LEFT);
-        root.getChildren().addAll(this.searchBarHbox, this.statusLabel);
+        root.getChildren().addAll(this.searchBarHbox, this.statusLabel, this.imageTilePane);
 
     } // init
 
