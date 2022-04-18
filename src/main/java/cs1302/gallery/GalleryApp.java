@@ -49,7 +49,7 @@ public class GalleryApp extends Application {
         this.searchBarHbox = new SearchBarHBox();
         this.statusLabel = new Label("Type in a term, select a media type, and click the button.");
         this.imageTilePane = new ImageTilePane();
-        this.progressHbox = null;
+        this.progressHbox = new ProgressHBox();
     } // GalleryApp
 
     /** {@inheritDoc} */
@@ -58,7 +58,8 @@ public class GalleryApp extends Application {
         System.out.println("init() called");
 
         root.setAlignment(Pos.CENTER_LEFT);
-        root.getChildren().addAll(this.searchBarHbox, this.statusLabel, this.imageTilePane);
+        root.getChildren().addAll(this.searchBarHbox, this.statusLabel,
+            this.imageTilePane, this.progressHbox);
 
     } // init
 

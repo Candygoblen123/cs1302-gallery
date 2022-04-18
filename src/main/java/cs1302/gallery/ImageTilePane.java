@@ -21,7 +21,7 @@ public class ImageTilePane extends TilePane {
     }
 
     /**
-     * Arranges the User Interface
+     * Arranges the User Interface.
      */
     public void init() {
         this.setPrefColumns(5);
