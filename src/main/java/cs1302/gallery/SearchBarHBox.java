@@ -6,6 +6,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+
+import java.io.IOException;
 
 /**
  * A Node containing the search bar in the iTunes gallery app.
@@ -43,5 +49,19 @@ public class SearchBarHBox extends HBox {
         this.getChildren().addAll(playButton, searchLabel, searchTextField,
             mediaTypeComboBox, searchButton);
 
+        searchButton.setOnAction(this::loadImages);
+    }
+
+    public void loadImages(ActionEvent ae) {
+        Thread t = new Thread(() -> {
+            try {
+                ItunesAPIDriver.getImageArr(searchTextField.getText(),
+                    mediaTypeComboBox.getValue());
+            } catch (IOException | InterruptedException e) {
+                Alert alert = new Alert(AlertType.ERROR, "e");
+                Platform.runLater(() -> alert.showAndWait());
+            }
+        });
+        t.start();
     }
 }
