@@ -59,8 +59,6 @@ public class SearchBarHBox extends HBox {
                 ItunesAPIDriver.getImageArr(searchTextField.getText(),
                 mediaTypeComboBox.getValue());
             } catch (IOException | InterruptedException e) {
-                System.out.println(e);
-                System.out.println(e.getMessage());
                 Platform.runLater(() -> {
                     Alert alert = new Alert(AlertType.ERROR, "URI: https://itunes.apple.com/search"
                         + String.format("?term=%s&media=%s&limit=%s",
