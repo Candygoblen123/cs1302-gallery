@@ -11,6 +11,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 
+import java.net.URLEncoder;
 import java.io.IOException;
 
 /**
@@ -56,10 +57,18 @@ public class SearchBarHBox extends HBox {
         Thread t = new Thread(() -> {
             try {
                 ItunesAPIDriver.getImageArr(searchTextField.getText(),
-                    mediaTypeComboBox.getValue());
+                mediaTypeComboBox.getValue());
             } catch (IOException | InterruptedException e) {
-                Alert alert = new Alert(AlertType.ERROR, "e");
-                Platform.runLater(() -> alert.showAndWait());
+                System.out.println(e);
+                System.out.println(e.getMessage());
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(AlertType.ERROR, "URI: https://itunes.apple.com/search"
+                        + String.format("?term=%s&media=%s&limit=%s",
+                        URLEncoder.encode(searchTextField.getText()),
+                        URLEncoder.encode(mediaTypeComboBox.getValue()), 200)
+                        + "\n\nException: " + e.toString());
+                    alert.showAndWait();
+                });
             }
         });
         t.start();
