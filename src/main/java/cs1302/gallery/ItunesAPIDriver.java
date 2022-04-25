@@ -51,10 +51,9 @@ public class ItunesAPIDriver {
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create("https://itunes.apple.com/search" + params))
             .build();
-        System.out.println("hello"
+
         HttpResponse<String> response = HTTP_CLIENT.send(request, BodyHandlers.ofString());
 
-        System.out.println(response.statusCode());
         if (response.statusCode() != 200) {
             throw new IOException(response.toString());
         }
