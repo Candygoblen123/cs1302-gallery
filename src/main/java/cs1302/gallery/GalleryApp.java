@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
+import javafx.geometry.Insets;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,11 +21,6 @@ import com.google.gson.GsonBuilder;
  */
 public class GalleryApp extends Application {
 
-    /** HTTP client. */
-    public static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
-        .version(HttpClient.Version.HTTP_2)           // uses HTTP protocol version 2 where possible
-        .followRedirects(HttpClient.Redirect.NORMAL)  // always redirects, except from HTTPS to HTTP
-        .build();                                     // builds and returns a HttpClient object
 
     /** Google {@code Gson} object for parsing JSON-formatted strings. */
     public static Gson GSON = new GsonBuilder()
@@ -61,6 +57,10 @@ public class GalleryApp extends Application {
         root.getChildren().addAll(this.searchBarHbox, this.statusLabel,
             this.imageTilePane, this.progressHbox);
 
+        root.setPadding(new Insets(4, 0, 4, 0));
+        searchBarHbox.setPadding(new Insets(0, 4, 0, 4));
+        statusLabel.setPadding(new Insets(0, 4, 0, 4));
+        progressHbox.setPadding(new Insets(0, 4, 0, 4));
     } // init
 
     /** {@inheritDoc} */
