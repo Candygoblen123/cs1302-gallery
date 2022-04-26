@@ -123,4 +123,11 @@ public class GalleryApp extends Application {
         imageTilePane.stopPlaying();
     }
 
+    /**
+     * Resize the stage to the scene.
+     */
+    public void resizeToScene() {
+        this.stage.sizeToScene();
+    }
+
 } // GalleryApp

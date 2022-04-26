@@ -77,7 +77,6 @@ public class SearchBarHBox extends HBox {
                 this.app.stopPlaying();
             });
 
-
             String searchText = searchTextField.getText();
             String mediaType = mediaTypeComboBox.getValue();
 
@@ -124,9 +123,11 @@ public class SearchBarHBox extends HBox {
         if (this.playButton.getText().equals("Play")) {
             this.playButton.setText("Pause");
             this.app.startPlaying();
+            this.app.resizeToScene();
         } else {
             this.playButton.setText("Play");
             this.app.stopPlaying();
+            this.app.resizeToScene();
         }
 
     }
