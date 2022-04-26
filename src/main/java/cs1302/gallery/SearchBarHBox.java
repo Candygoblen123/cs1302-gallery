@@ -26,9 +26,8 @@ public class SearchBarHBox extends HBox {
     private TextField searchTextField;
     private ComboBox<String> mediaTypeComboBox;
     private Button searchButton;
-    private boolean playEnabled;
-    private boolean playing;
     private GalleryApp app;
+    private boolean playEnable;
 
     /**
      * Constructs a new {@code SearchBarHBox}.
@@ -37,8 +36,7 @@ public class SearchBarHBox extends HBox {
     public SearchBarHBox(GalleryApp app) {
         super(4);
         this.app = app;
-        this.playEnabled = false;
-        this.playing = false;
+        this.playEnable = true;
 
         playButton = new Button("Play");
         searchLabel = new Label("Search:");
@@ -95,12 +93,12 @@ public class SearchBarHBox extends HBox {
                     URLEncoder.encode(searchText),
                     URLEncoder.encode(mediaType), 200));
                 this.app.updateProgress(1.0);
-                this.playEnabled = true;
-
+                this.playEnable = true;
             } catch (Exception e) {
                 this.app.updateStatus("Last attempt to get images failed...");
                 this.app.updateProgress(1.0);
                 Platform.runLater(() -> {
+
                     Alert alert = new Alert(AlertType.ERROR, "URI: https://itunes.apple.com/search"
                         + String.format("?term=%s&media=%s&limit=%s",
                         URLEncoder.encode(searchText),
@@ -110,7 +108,7 @@ public class SearchBarHBox extends HBox {
                 });
             }
             Platform.runLater(() -> this.searchButton.setDisable(false));
-            if (playEnabled) {
+            if (this.playEnable) {
                 Platform.runLater(() -> this.playButton.setDisable(false));
             }
 
@@ -123,12 +121,10 @@ public class SearchBarHBox extends HBox {
      * @param ae an ActionEvent.
      */
     public void playPause(ActionEvent ae) {
-        if (this.playing == false) {
-            this.playing = true;
+        if (this.playButton.getText().equals("Play")) {
             this.playButton.setText("Pause");
             this.app.startPlaying();
         } else {
-            this.playing = false;
             this.playButton.setText("Play");
             this.app.stopPlaying();
         }
