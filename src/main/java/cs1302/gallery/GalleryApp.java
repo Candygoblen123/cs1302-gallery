@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import javafx.scene.image.Image;
+import java.util.ArrayList;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -104,8 +105,22 @@ public class GalleryApp extends Application {
      * Show the provided array of images in the UI.
      * @param images the array of Image objects
      */
-    public void showImages(Image[] images) {
-        imageTilePane.showImages(images, this);
+    public void showImages(ArrayList<Image> images) {
+        imageTilePane.showImages(images);
+    }
+
+    /**
+     * Start swapping out arevery 2 seconds.
+     */
+    public void startPlaying() {
+        imageTilePane.startPlaying();
+    }
+
+    /**
+     * Stop swapping images every 2 seconds.
+     */
+    public void stopPlaying() {
+        imageTilePane.stopPlaying();
     }
 
 } // GalleryApp

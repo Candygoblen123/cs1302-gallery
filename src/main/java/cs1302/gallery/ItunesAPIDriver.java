@@ -13,6 +13,7 @@ import java.time.Duration;
 import com.google.gson.Gson;
 import javafx.scene.image.Image;
 import java.util.Arrays;
+import java.util.ArrayList;
 
 /**
  * A class that does all the talking with the iTunes API.
@@ -86,13 +87,20 @@ public class ItunesAPIDriver {
      * @param imageUrls an array of urls that point to images
      * @param app a refrence to the Application object
      * @return an array of Image objects
+     * @throws Exception when an image fails to download
      */
-    public static Image[] downloadImages(String[] imageUrls, GalleryApp app) {
+    public static ArrayList<Image> downloadImages(String[] imageUrls, GalleryApp app)
+        throws Exception {
         app.updateProgress(0.0);
 
-        Image[] images = new Image[imageUrls.length];
+        ArrayList<Image> images = new ArrayList<Image>();
         for (int i = 0; i < imageUrls.length; i++) {
-            images[i] = new Image(imageUrls[i]);
+            Image img = new Image(imageUrls[i]);
+            if (img.isError()) {
+                throw img.getException();
+            }
+            images.add(img);
+
             // I know casting bad, but the division won't work correctly otherwise.
             app.updateProgress((double)i / (double)imageUrls.length);
         }

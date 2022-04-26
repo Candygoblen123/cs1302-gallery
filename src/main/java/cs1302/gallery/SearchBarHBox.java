@@ -11,9 +11,11 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Priority;
 
 import java.net.URLEncoder;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * A Node containing the search bar in the iTunes gallery app.
@@ -25,7 +27,8 @@ public class SearchBarHBox extends HBox {
     private ComboBox<String> mediaTypeComboBox;
     private Button searchButton;
     private boolean playEnabled;
-    GalleryApp app;
+    private boolean playing;
+    private GalleryApp app;
 
     /**
      * Constructs a new {@code SearchBarHBox}.
@@ -35,10 +38,11 @@ public class SearchBarHBox extends HBox {
         super(4);
         this.app = app;
         this.playEnabled = false;
+        this.playing = false;
 
         playButton = new Button("Play");
         searchLabel = new Label("Search:");
-        searchTextField = new TextField("nanahira");
+        searchTextField = new TextField("Bill Wurtz");
         mediaTypeComboBox = new ComboBox<String>();
         searchButton = new Button("Get Images");
         init();
@@ -56,7 +60,9 @@ public class SearchBarHBox extends HBox {
         this.getChildren().addAll(playButton, searchLabel, searchTextField,
             mediaTypeComboBox, searchButton);
 
+        HBox.setHgrow(searchTextField, Priority.ALWAYS);
         searchButton.setOnAction(this::loadImages);
+        playButton.setOnAction(this::playPause);
     }
 
     /**
@@ -66,15 +72,21 @@ public class SearchBarHBox extends HBox {
     public void loadImages(ActionEvent ae) {
         Thread t = new Thread(() -> {
             this.app.updateStatus("Getting images...");
-            Platform.runLater(() -> this.searchButton.setDisable(true));
-            Platform.runLater(() -> this.searchButton.setDisable(true));
+            Platform.runLater(() -> {
+                this.searchButton.setDisable(true);
+                this.playButton.setDisable(true);
+                this.playButton.setText("Play");
+                this.app.stopPlaying();
+            });
+
+
             String searchText = searchTextField.getText();
             String mediaType = mediaTypeComboBox.getValue();
 
             try {
                 String[] imageUrls = ItunesAPIDriver.getImageArr(searchText, mediaType);
 
-                Image[] images = ItunesAPIDriver.downloadImages(imageUrls, app);
+                ArrayList<Image> images = ItunesAPIDriver.downloadImages(imageUrls, app);
 
                 this.app.showImages(images);
 
@@ -85,7 +97,7 @@ public class SearchBarHBox extends HBox {
                 this.app.updateProgress(1.0);
                 this.playEnabled = true;
 
-            } catch (IOException | InterruptedException | IllegalArgumentException e) {
+            } catch (Exception e) {
                 this.app.updateStatus("Last attempt to get images failed...");
                 this.app.updateProgress(1.0);
                 Platform.runLater(() -> {
@@ -104,5 +116,22 @@ public class SearchBarHBox extends HBox {
 
         });
         t.start();
+    }
+
+    /**
+     * Handles the playing and pausing of artwork.
+     * @param ae an ActionEvent.
+     */
+    public void playPause(ActionEvent ae) {
+        if (this.playing == false) {
+            this.playing = true;
+            this.playButton.setText("Pause");
+            this.app.startPlaying();
+        } else {
+            this.playing = false;
+            this.playButton.setText("Play");
+            this.app.stopPlaying();
+        }
+
     }
 }
