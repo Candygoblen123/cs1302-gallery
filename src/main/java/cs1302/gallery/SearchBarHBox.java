@@ -81,6 +81,7 @@ public class SearchBarHBox extends HBox {
             String mediaType = mediaTypeComboBox.getValue();
 
             try {
+                this.app.updateProgress(-1.0);
                 String[] imageUrls = ItunesAPIDriver.getImageArr(searchText, mediaType);
 
                 ArrayList<Image> images = ItunesAPIDriver.downloadImages(imageUrls, app);

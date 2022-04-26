@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import javafx.scene.image.Image;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 /**
  * A class that does all the talking with the iTunes API.
@@ -56,7 +57,11 @@ public class ItunesAPIDriver {
             urls[i] = response.results[i].artworkUrl100;
         }
 
-        return urls;
+        LinkedHashSet<String> linkedHashSet = new LinkedHashSet<String>(Arrays.asList(urls));
+
+        String[] distinctUrls = linkedHashSet.toArray(new String[] {});
+
+        return distinctUrls;
     }
 
     /**
