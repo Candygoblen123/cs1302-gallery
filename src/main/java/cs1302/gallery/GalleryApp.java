@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
+import javafx.scene.image.Image;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,8 +33,8 @@ public class GalleryApp extends Application {
     private VBox root;
     private HBox searchBarHbox;
     private Label statusLabel;
-    private TilePane imageTilePane;
-    private HBox progressHbox;
+    private ImageTilePane imageTilePane;
+    private ProgressHBox progressHbox;
 
     /**
      * Constructs a {@code GalleryApp} object}.
@@ -42,7 +43,7 @@ public class GalleryApp extends Application {
         this.stage = null;
         this.scene = null;
         this.root = new VBox(4);
-        this.searchBarHbox = new SearchBarHBox();
+        this.searchBarHbox = new SearchBarHBox(this);
         this.statusLabel = new Label("Type in a term, select a media type, and click the button.");
         this.imageTilePane = new ImageTilePane();
         this.progressHbox = new ProgressHBox();
@@ -82,5 +83,29 @@ public class GalleryApp extends Application {
         // feel free to modify this method
         System.out.println("stop() called");
     } // stop
+
+    /**
+     * Updates the statusLabel.
+     * @param status the string to chnge the label to
+     */
+    public void updateStatus(String status) {
+        Platform.runLater(() -> statusLabel.setText(status));
+    }
+
+    /**
+     * Sets the progress of the progressBar.
+     * @param progress the progress to set it to
+     */
+    public void updateProgress(double progress) {
+        progressHbox.updateProgress(progress);
+    }
+
+    /**
+     * Show the provided array of images in the UI.
+     * @param images the array of Image objects
+     */
+    public void showImages(Image[] images) {
+        imageTilePane.showImages(images, this);
+    }
 
 } // GalleryApp

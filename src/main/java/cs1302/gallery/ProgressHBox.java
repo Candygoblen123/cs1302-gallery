@@ -5,6 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.geometry.Insets;
+import javafx.application.Platform;
 
 /**
  * A Bar that contains a progress bar and an iTunes image credit.
@@ -19,7 +20,8 @@ public class ProgressHBox extends HBox {
     public ProgressHBox() {
         super(4);
 
-        progressBar = new ProgressBar(0.0);
+        progressBar = new ProgressBar();
+        progressBar.setProgress(0.0);
         creditLabel = new Label("Images provided by iTunes Search API.");
 
         init();
@@ -33,5 +35,13 @@ public class ProgressHBox extends HBox {
         HBox.setHgrow(progressBar, Priority.ALWAYS);
         progressBar.setMaxWidth(Double.MAX_VALUE);
         this.getChildren().addAll(progressBar, creditLabel);
+    }
+
+    /**
+     * Updates the progressBar.
+     * @param progress the progress to update to.
+     */
+    public void updateProgress(double progress) {
+        Platform.runLater(() -> progressBar.setProgress(progress));
     }
 }

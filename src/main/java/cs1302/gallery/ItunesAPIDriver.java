@@ -9,6 +9,10 @@ import java.net.URI;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.net.URLEncoder;
+import java.time.Duration;
+import com.google.gson.Gson;
+import javafx.scene.image.Image;
+import java.util.Arrays;
 
 /**
  * A class that does all the talking with the iTunes API.
@@ -17,6 +21,7 @@ public class ItunesAPIDriver {
     /** HTTP client. */
     public static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
         .version(HttpClient.Version.HTTP_2)           // uses HTTP protocol version 2 where possible
+        .connectTimeout(Duration.ofSeconds(20))
         .followRedirects(HttpClient.Redirect.NORMAL)  // always redirects, except from HTTPS to HTTP
         .build();                                     // builds and returns a HttpClient object
 
@@ -27,17 +32,30 @@ public class ItunesAPIDriver {
      * @return a String[] of image URLs
      * @throws IOException when the network request failed.
      * @throws InterruptedException when the network request failed.
+     * @throws IllegalArgumentException when there are less than 21 images available.
      */
-    public static String getImageArr(String searchTerm, String type)
-        throws IOException, InterruptedException {
+    public static String[] getImageArr(String searchTerm, String type)
+        throws IOException, InterruptedException, IllegalArgumentException {
         String term = URLEncoder.encode(searchTerm, StandardCharsets.UTF_8);
         String media = URLEncoder.encode(type, StandardCharsets.UTF_8);
         String limit = URLEncoder.encode("200", StandardCharsets.UTF_8);
         String query = String.format("?term=%s&media=%s&limit=%s", term, media, limit);
 
-        String response = ItunesAPIDriver.apiRequest(query);
-        System.out.println(response);
-        return response;
+        String json = ItunesAPIDriver.apiRequest(query);
+        Gson gson = new Gson();
+        ItunesResponse response = gson.fromJson(json, ItunesResponse.class);
+
+        if (response.resultCount <= 21) {
+            throw new IllegalArgumentException(response.resultCount +
+                " distinct results found, but 21 or more are needed.");
+        }
+
+        String[] urls = new String[response.resultCount];
+        for (int i = 0; i < response.resultCount; i++) {
+            urls[i] = response.results[i].artworkUrl100;
+        }
+
+        return urls;
     }
 
     /**
@@ -61,5 +79,24 @@ public class ItunesAPIDriver {
         String responseBody = response.body().trim();
         return responseBody;
 
+    }
+
+    /**
+     * Download the images into an array of Image objects.
+     * @param imageUrls an array of urls that point to images
+     * @param app a refrence to the Application object
+     * @return an array of Image objects
+     */
+    public static Image[] downloadImages(String[] imageUrls, GalleryApp app) {
+        app.updateProgress(0.0);
+
+        Image[] images = new Image[imageUrls.length];
+        for (int i = 0; i < imageUrls.length; i++) {
+            images[i] = new Image(imageUrls[i]);
+            // I know casting bad, but the division won't work correctly otherwise.
+            app.updateProgress((double)i / (double)imageUrls.length);
+        }
+
+        return images;
     }
 }

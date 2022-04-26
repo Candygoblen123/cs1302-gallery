@@ -10,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.scene.image.Image;
 
 import java.net.URLEncoder;
 import java.io.IOException;
@@ -23,12 +24,17 @@ public class SearchBarHBox extends HBox {
     private TextField searchTextField;
     private ComboBox<String> mediaTypeComboBox;
     private Button searchButton;
+    private boolean playEnabled;
+    GalleryApp app;
 
     /**
      * Constructs a new {@code SearchBarHBox}.
+     * @param app a refence to the Application object
      */
-    public SearchBarHBox() {
+    public SearchBarHBox(GalleryApp app) {
         super(4);
+        this.app = app;
+        this.playEnabled = false;
 
         playButton = new Button("Play");
         searchLabel = new Label("Search:");
@@ -53,21 +59,49 @@ public class SearchBarHBox extends HBox {
         searchButton.setOnAction(this::loadImages);
     }
 
+    /**
+     * Everything that needs to happen to get the images to appear in the UI.
+     * @param ae an action event.
+     */
     public void loadImages(ActionEvent ae) {
         Thread t = new Thread(() -> {
+            this.app.updateStatus("Getting images...");
+            Platform.runLater(() -> this.searchButton.setDisable(true));
+            Platform.runLater(() -> this.searchButton.setDisable(true));
+            String searchText = searchTextField.getText();
+            String mediaType = mediaTypeComboBox.getValue();
+
             try {
-                ItunesAPIDriver.getImageArr(searchTextField.getText(),
-                mediaTypeComboBox.getValue());
-            } catch (IOException | InterruptedException e) {
+                String[] imageUrls = ItunesAPIDriver.getImageArr(searchText, mediaType);
+
+                Image[] images = ItunesAPIDriver.downloadImages(imageUrls, app);
+
+                this.app.showImages(images);
+
+                this.app.updateStatus("https://itunes.apple.com/search"
+                    + String.format("?term=%s&media=%s&limit=%s",
+                    URLEncoder.encode(searchText),
+                    URLEncoder.encode(mediaType), 200));
+                this.app.updateProgress(1.0);
+                this.playEnabled = true;
+
+            } catch (IOException | InterruptedException | IllegalArgumentException e) {
+                this.app.updateStatus("Last attempt to get images failed...");
+                this.app.updateProgress(1.0);
                 Platform.runLater(() -> {
                     Alert alert = new Alert(AlertType.ERROR, "URI: https://itunes.apple.com/search"
                         + String.format("?term=%s&media=%s&limit=%s",
-                        URLEncoder.encode(searchTextField.getText()),
-                        URLEncoder.encode(mediaTypeComboBox.getValue()), 200)
+                        URLEncoder.encode(searchText),
+                        URLEncoder.encode(mediaType), 200)
                         + "\n\nException: " + e.toString());
                     alert.showAndWait();
                 });
             }
+            Platform.runLater(() -> this.searchButton.setDisable(false));
+            if (playEnabled) {
+                Platform.runLater(() -> this.playButton.setDisable(false));
+            }
+
         });
         t.start();
     }
